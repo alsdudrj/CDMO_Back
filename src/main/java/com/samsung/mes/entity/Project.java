@@ -1,17 +1,19 @@
 package com.samsung.mes.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @ToString
 @Getter
 @Setter
-public class Company {
+public class Project {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,19 +23,20 @@ public class Company {
     private String name;
 
     @Column(nullable = false)
-    private String type;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "client_company_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private Company clientCompanyId;
 
     @Column(nullable = false)
-    private String address;
+    private String status;
 
-    @Column(name = "contact_name", nullable = false)
-    private String contactName;
+    @Column(name = "start_date", nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate startDate;
 
-    @Column(name = "contact_email", nullable = false)
-    private String contactEmail;
-
-    @Column(name = "contact_phone", nullable = false)
-    private String contactPhone;
+    @Column(name = "end_date", nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate endDate;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;

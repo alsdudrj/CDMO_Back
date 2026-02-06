@@ -13,30 +13,28 @@ import java.time.LocalDateTime;
 @ToString
 @Getter
 @Setter
-public class Project {
+public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private Project projectId;
+
+    @Column(nullable = false)
     private String name;
 
     @Column(nullable = false)
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "client_company_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private Company clientCompanyId;
+    private String dosage_form;
 
     @Column(nullable = false)
-    private String status;
+    private String type;
 
-    @Column(name = "start_date", nullable = false)
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate startDate;
-
-    @Column(name = "end_date", nullable = false)
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate endDate;
+    @Column(nullable = false)
+    private String strangth;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
