@@ -2,10 +2,11 @@ package com.samsung.mes.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.engine.jdbc.batch.spi.Batch;
 
 import java.time.LocalDate;
 
@@ -13,24 +14,26 @@ import java.time.LocalDate;
 @ToString
 @Getter
 @Setter
-public class GMPDocument {
+public class Contract {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "project_id", nullable = false)
+    @Column(name = "client_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private Project projectId;
+    @JoinColumn(name = "client_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private Company clientId;
+
+    @Column(name = "contract_date", nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate contractDate;
 
     @Column(nullable = false)
-    private String type;
+    private Long amount;
 
-    @Column(name = "file_path", nullable = false)
-    private String filePath;
-
-    @Column(name = "created_at", nullable = false)
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate createdAt;
+    @Column(nullable = false)
+    @NotBlank
+    @Pattern(regexp = "PENDING|SIGNED|EXPIRED")
+    private String status;
 }

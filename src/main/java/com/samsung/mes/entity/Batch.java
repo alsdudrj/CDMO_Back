@@ -2,6 +2,8 @@ package com.samsung.mes.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -13,27 +15,26 @@ import java.time.LocalDateTime;
 @ToString
 @Getter
 @Setter
-public class batch {
+public class Batch {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "product_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Product productId;
 
     @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false)
     private String batchNo;
 
     @Column(nullable = false)
-    private String quantity;
+    private Integer quantity;
 
     @Column(nullable = false)
+    @NotBlank
+    @Pattern(regexp = "PLANNED|IN_PROGRESS|COMPLETED")
     private String status;
 
     @Column(name = "mfg_date", nullable = false)

@@ -29,6 +29,26 @@ public class InventoryItem {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "material_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "material_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private Material materialId;
+
+    @Column(name="stock_qty", nullable = false)
+    @Min(0)
+    private Integer stockQty;
+
+    @Column(name="location", length=100)
+    @NotBlank
+    private String location;
+
+    @Column(nullable = false)
+    @NotBlank
+    @Pattern(regexp = "USABLE|QUARANTINE|EXPIRED")
+    private String status;
+
+    /////////////////////////////////////////////
+
     @Column(name="item_code", length=50, nullable = false)
     @NotBlank
     private String itemCode;
@@ -48,14 +68,6 @@ public class InventoryItem {
     @Column(name="warehouse", length=100)
     @NotBlank
     private String warehouse;
-
-    @Column(name="location", length=100)
-    @NotBlank
-    private String location;
-
-    @Column(name="stock_qty", nullable = false)
-    @Min(0)
-    private Integer stockQty;
 
     @Column(name="safety_stock")
     @Min(0)

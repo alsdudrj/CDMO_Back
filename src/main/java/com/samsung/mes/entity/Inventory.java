@@ -1,34 +1,31 @@
-package com.samsung.mes.entity;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
-import java.time.LocalDate;
-
-@Entity
-@ToString
-@Getter
-@Setter
-public class Recipe {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(name = "product_id", nullable = false)
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private Company productId;
-
-    @Column(nullable = false)
-    private String version;
-
-    @Column(name = "isActive", nullable = false)
-    private String isActive;
-
-    @Column(nullable = false)
-    private String status;
-}
+//package com.samsung.mes.entity;
+//
+//import jakarta.persistence.*;
+//import lombok.Getter;
+//import lombok.Setter;
+//import lombok.ToString;
+//
+//@Entity
+//@ToString
+//@Getter
+//@Setter
+//public class Inventory {
+//
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    private Long id;
+//
+//    @Column(name = "material_id", nullable = false)
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "material_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+//    private Material materialId;
+//
+//    @Column(nullable = false)
+//    private String quantity;
+//
+//    @Column(nullable = false)
+//    private String location;
+//
+//    @Column(nullable = false)
+//    private String status;
+//}

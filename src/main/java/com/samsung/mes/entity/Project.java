@@ -2,6 +2,8 @@ package com.samsung.mes.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -22,12 +24,14 @@ public class Project {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(name = "client_company_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_company_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Company clientCompanyId;
 
     @Column(nullable = false)
+    @NotBlank
+    @Pattern(regexp = "PLANNING|DEVELOPING|PRODUCING|DONE")
     private String status;
 
     @Column(name = "start_date", nullable = false)

@@ -13,13 +13,13 @@ import java.time.LocalDateTime;
 @ToString
 @Getter
 @Setter
-public class batch {
+public class Process {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "product_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Product productId;
@@ -27,23 +27,16 @@ public class batch {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    private String batchNo;
+    @Column(name = "step_order", nullable = false)
+    private String stepOrder;
 
     @Column(nullable = false)
-    private String quantity;
+    private String description;
+
+    @Column(name = "temp_ph", nullable = false)
+    private float tempPh;
 
     @Column(nullable = false)
-    private String status;
-
-    @Column(name = "mfg_date", nullable = false)
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate mfgDate;
-
-    @Column(name = "exp_date", nullable = false)
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate expDate;
-
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
+    private LocalDate timeStamp;
 }

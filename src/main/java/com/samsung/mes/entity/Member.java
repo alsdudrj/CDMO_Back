@@ -58,7 +58,7 @@ public class Member {
     @Column(name = "detail_address")
     private String detailAddress;
 
-    @Column(name = "company_id")
+    @Column(name = "company_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Company companyId;

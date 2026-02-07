@@ -28,6 +28,19 @@ public class Kpi {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "client_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "client_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private Member clientId;
+
+    @Column(name = "yield_rate", nullable = false)
+    private Float yieldRate;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    ////////////////////////////////////////////////////////
+
     @Column(name = "kpi_name", length = 200, nullable = false)
     @NotBlank
     private String kpiName;
@@ -69,9 +82,6 @@ public class Kpi {
 
     @Column(name = "remark", length = 500)
     private String remark;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 
     @PrePersist
     public void prePersist(){ //엔티티가 저장/수정될 때 자동으로 처리해야 할 공통 규칙을 한 곳에 모아두는 곳

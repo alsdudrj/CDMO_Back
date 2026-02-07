@@ -1,34 +1,31 @@
 package com.samsung.mes.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @ToString
 @Getter
 @Setter
-public class Recipe {
+public class RevInfo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long rev;
 
-    @Column(name = "product_id", nullable = false)
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private Product productId;
+    @Column(name = "rev_tstmp", nullable = false)
+    private LocalDateTime revTstmp;
 
-    @Column(nullable = false)
-    private String version;
+    @Column(name = "user_id", nullable = false)
+    private String userId;
 
-    @Column(name = "isActive", nullable = false)
-    private String isActive;
+    @Column(name = "user_ip", nullable = false)
+    private String userIp;
 
-    @Column(nullable = false)
-    private String status;
+    @Column(name = "change_reason", nullable = false)
+    private String changeReason;
 }

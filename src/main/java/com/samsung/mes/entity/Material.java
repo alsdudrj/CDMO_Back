@@ -1,6 +1,8 @@
 package com.samsung.mes.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -21,9 +23,11 @@ public class Material {
     private String name;
 
     @Column(nullable = false)
+    @NotBlank
+    @Pattern(regexp = "API|EXCIPIENT")
     private String type;
 
-    @Column(nullable = false)
+    @Column(name = "supplier_company_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "supplier_company_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Company supplierCompanyId;
