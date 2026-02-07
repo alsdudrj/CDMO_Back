@@ -17,20 +17,17 @@ public class Signature {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "batch_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "batch_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private Batch batchId;
+    @JoinColumn(name = "batch_id")
+    private Batch batch;
 
-    @Column(name = "deviation_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "deviation_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private Deviation deviationId;
+    @JoinColumn(name = "deviation_id")
+    private Deviation deviation;
 
-    @Column(name = "signer_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "signer_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private Member signerId;
+    @JoinColumn(name = "signer_id")
+    private Member member;
 
     @Column(nullable = false)
     @NotBlank

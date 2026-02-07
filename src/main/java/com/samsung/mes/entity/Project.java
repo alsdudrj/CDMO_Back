@@ -24,10 +24,9 @@ public class Project {
     @Column(nullable = false)
     private String name;
 
-    @Column(name = "client_company_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "client_company_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private Company clientCompanyId;
+    @JoinColumn(name = "client_company_id")
+    private Company company;
 
     @Column(nullable = false)
     @NotBlank

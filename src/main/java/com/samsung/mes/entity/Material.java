@@ -27,10 +27,9 @@ public class Material {
     @Pattern(regexp = "API|EXCIPIENT")
     private String type;
 
-    @Column(name = "supplier_company_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "supplier_company_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private Company supplierCompanyId;
+    @JoinColumn(name = "supplier_company_id")
+    private Company company;
 
     @Column(nullable = false)
     private String spec;

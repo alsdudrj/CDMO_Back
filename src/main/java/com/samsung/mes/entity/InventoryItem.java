@@ -29,10 +29,9 @@ public class InventoryItem {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "material_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "material_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private Material materialId;
+    @JoinColumn(name = "material_id")
+    private Material material;
 
     @Column(name="stock_qty", nullable = false)
     @Min(0)

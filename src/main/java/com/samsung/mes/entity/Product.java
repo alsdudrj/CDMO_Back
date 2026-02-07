@@ -19,10 +19,9 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "project_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private Project projectId;
+    @JoinColumn(name = "project_id")
+    private Project project;
 
     @Column(nullable = false)
     private String name;

@@ -56,6 +56,7 @@ public class SecurityConfig{ //보안설정을 쉽게 overrid(재정의)해서 �
 				.requestMatchers("/api/**").permitAll()
 				.requestMatchers("/api/sales/orders/**").permitAll()
 				.requestMatchers("/", "/error", "/favicon.ico").permitAll()
+                .requestMatchers("/ws-cdms/**").permitAll()
 				.anyRequest().authenticated()//위에서 허용된 것을 제외하고는 모두 로그인(인증)된 사용자만 접근가능
 		);
 		

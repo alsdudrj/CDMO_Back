@@ -20,10 +20,9 @@ public class Contract {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "client_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "client_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private Company clientId;
+    @JoinColumn(name = "client_id")
+    private Company company;
 
     @Column(name = "contract_date", nullable = false)
     @JsonFormat(pattern = "yyyy-MM-dd")

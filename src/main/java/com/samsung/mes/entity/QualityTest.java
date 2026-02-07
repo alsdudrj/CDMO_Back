@@ -20,10 +20,9 @@ public class QualityTest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "batch_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "batch_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private Batch batchId;
+    @JoinColumn(name = "batch_id")
+    private Batch batch;
 
     @Column(name = "test_type", nullable = false)
     private String testType;
@@ -37,7 +36,6 @@ public class QualityTest {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate testedAt;
 
-    @Column(name = "tester_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tester_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Member testerId;

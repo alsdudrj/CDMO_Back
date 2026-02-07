@@ -7,7 +7,6 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.engine.jdbc.batch.spi.Batch;
 
 import java.time.LocalDate;
 
@@ -21,20 +20,17 @@ public class BatchProcess {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "batch_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "batch_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private Batch batchId;
+    @JoinColumn(name = "batch_id")
+    private Batch batch;
 
-    @Column(name = "process_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "process_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private Process processId;
+    @JoinColumn(name = "process_id")
+    private Process process;
 
-    @Column(name = "operator_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "operator_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private Member operatorId;
+    @JoinColumn(name = "operator_id")
+    private Member member;
 
     @Column(name = "start_time", nullable = false)
     @JsonFormat(pattern = "yyyy-MM-dd")

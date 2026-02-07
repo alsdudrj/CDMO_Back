@@ -28,10 +28,9 @@ public class Kpi {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "client_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "client_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private Member clientId;
+    @JoinColumn(name = "client_id")
+    private Member member;
 
     @Column(name = "yield_rate", nullable = false)
     private Float yieldRate;

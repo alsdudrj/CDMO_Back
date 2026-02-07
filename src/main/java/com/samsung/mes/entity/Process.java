@@ -19,24 +19,22 @@ public class Process {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "product_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private Product productId;
+    @JoinColumn(name = "product_id")
+    private Product product;
 
-    @Column(nullable = false)
     private String name;
 
-    @Column(name = "step_order", nullable = false)
+    @Column(name = "step_order")
     private String stepOrder;
 
-    @Column(nullable = false)
     private String description;
 
-    @Column(name = "temp_ph", nullable = false)
+    @Column(name = "temp_ph")
     private float tempPh;
 
-    @Column(nullable = false)
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate timeStamp;
+
+    private String status;
 }
