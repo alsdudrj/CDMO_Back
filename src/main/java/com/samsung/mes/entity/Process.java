@@ -19,6 +19,11 @@ public class Process {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // 이 공정이 어떤 레시피에 속하는지 연결
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "recipe_id")
+    private Recipe recipe;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
@@ -43,8 +48,8 @@ public class Process {
     private Float doValue;      // 용존 산소량
 
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate timeStamp;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime timeStamp;
 
     private String status;
 }

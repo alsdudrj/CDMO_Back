@@ -1,5 +1,6 @@
 package com.samsung.mes.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,11 +19,13 @@ public class ProcessLog {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "process_id")
+    @JsonIgnore // JSON 변환 시 process 정보는 제외 (순환 참조 방지)
     private Process process; // FK (어떤 공정의 데이터인지)
 
-    private Integer progressRate; // 진행률 (0~100)
+    private float tempPh;
+    private float phValue;
+    private float doValue;
+    private float progressRate;
 
-    private String logMessage; // 로그 메시지
-
-    private LocalDateTime createdAt; // 기록 시간
+    private LocalDateTime timeStamp; // 기록 시간
 }
