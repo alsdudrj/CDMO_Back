@@ -12,7 +12,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // 프론트에서 접속할 엔드포인트: ws://localhost:8080/ws-cdms
+        // 프론트에서 접속할 엔드포인트: ws://localhost:9500/ws-cdms
         registry.addEndpoint("/ws-cdms")
                 .setAllowedOriginPatterns("*") // CORS 모두 허용
                 .withSockJS();

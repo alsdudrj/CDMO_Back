@@ -20,7 +20,8 @@ public class SimulationService {
     private final ProcessLogRepository logRepository;
     private final ProcessRepository processRepository;
 
-    @Scheduled(fixedRate = 5000)
+    //공정진행률 시뮬레이터
+    @Scheduled(fixedRate = 5 * 1000)
     @Transactional
     public void runSimulation() {
         Process process = processRepository.findById(1L).orElseGet(() -> {
@@ -28,24 +29,67 @@ public class SimulationService {
             newProcess.setName("기본 공정");
             newProcess.setStatus("RUNNING");
             newProcess.setDescription("시뮬레이션 자동 생성 데이터");
-            newProcess.setTempPh(0.0f); // float 리터럴은 뒤에 f를 붙입니다.
+            newProcess.setTempPh(0.0f);         // 초기값 설정
+            newProcess.setProgressRate(0.0f);   // 초기값 설정
             return processRepository.save(newProcess);
         });
 
-        // Math.random()은 double을 반환하므로 float으로 캐스팅(형변환) 합니다.
-        float randomRate = (float) (Math.random() * 100);
+        float randomRate = (float) (Math.random() * 100);   //진행률 생성
 
-        // 3. 필드 설정 (타입이 float이므로 이제 에러가 나지 않습니다)
-        process.setTempPh(randomRate);
+        // 진행률 전용 필드(progressRate)에 저장
+        process.setProgressRate(randomRate);
         process.setStatus("RUNNING");
-
-        // 타임스탬프가 LocalDate이므로 오늘 날짜를 넣어줍니다.
         process.setTimeStamp(java.time.LocalDate.now());
 
         processRepository.save(process);
 
-        // 4. 프론트 전송 (소수점이 너무 길면 보기 힘드니 int로 변환해서 보냅니다)
         messagingTemplate.convertAndSend("/topic/progress/" + process.getId(), (int)randomRate);
         System.out.println("실시간 데이터 전송 및 DB 저장 완료: " + (int)randomRate + "%");
+    }
+
+    //온도 시뮬레이터
+    @Scheduled(fixedRate = 10 * 1000)
+    @Transactional
+    public void runTemperatureSimulation() {
+        // ID 1번 공정을 대상으로 온도 데이터 생성
+        Process process = processRepository.findById(1L).orElse(null);
+
+        if (process != null) {
+            // 30~40도 사이의 랜덤 온도 생성
+            float randomTemp = (float) (30.0 + Math.random() * 10);
+
+            // DB에 저장
+            process.setTempPh(randomTemp);
+            processRepository.save(process);
+
+            // 실시간 송신
+            messagingTemplate.convertAndSend("/topic/temperature/" + process.getId(), randomTemp);
+
+            System.out.println("실시간 온도데이터 전송 중: " + String.format("%.1f", randomTemp) + "°C");
+        }
+    }
+
+    //pH, DO 수치 시뮬레이터
+    @Scheduled(fixedRate = 10 * 1000)
+    @Transactional
+    public void runChemicalSimulation() {
+        Process process = processRepository.findById(1L).orElse(null);
+
+        if (process != null) {
+            // 데이터 생성
+            float ph = (float) (4.5 + Math.random() * 3); // 4.5 ~ 7.5 사이
+            float doVal = (float) (5.0 + Math.random() * 55.0); // 5.0 ~ 60.0 사이
+
+            // DB 저장
+            process.setPhValue(ph);
+            process.setDoValue(doVal);
+            processRepository.save(process);
+
+            // 실시간 전송
+            messagingTemplate.convertAndSend("/topic/ph/" + process.getId(), ph);
+            messagingTemplate.convertAndSend("/topic/do/" + process.getId(), doVal);
+
+            System.out.println(String.format("pH: %.2f | DO: %.1f%%", ph, doVal));
+        }
     }
 }

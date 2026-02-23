@@ -31,7 +31,17 @@ public class Process {
     private String description;
 
     @Column(name = "temp_ph")
-    private float tempPh;
+    private float tempPh;       // 온도 저장용
+
+    @Column(name = "progress_rate")
+    private Float progressRate; // 진행률 저장용
+
+    @Column(name = "ph_value")
+    private Float phValue;      // 수소이온농도
+
+    @Column(name = "do_value")
+    private Float doValue;      // 용존 산소량
+
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate timeStamp;
