@@ -41,8 +41,8 @@ public class SimulationService {
             float finalRate = Math.min(100.0f, nextRate);
 
             // 3. 엔티티 업데이트
-            process.setTempPh(newTemp);
-            process.setPhValue(newPh);
+            process.setTemp(newTemp);
+            process.setPh(newPh);
             process.setDoValue(newDo);
             process.setProgressRate(finalRate);
             process.setTimeStamp(java.time.LocalDateTime.now());
