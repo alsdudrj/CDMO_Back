@@ -1,7 +1,7 @@
 package com.samsung.mes.service;
 
 import com.samsung.mes.dto.ProcessDto;
-import com.samsung.mes.dto.RecipeDto;
+import com.samsung.mes.dto.RecipeDTO;
 import com.samsung.mes.entity.Process;
 import com.samsung.mes.entity.Product;
 import com.samsung.mes.entity.Recipe;
@@ -11,7 +11,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -23,7 +22,7 @@ public class RecipeService {
     private final RecipeRepository recipeRepository;
     private final ProductRepository productRepository;
 
-    public List<RecipeDto> getRecipesByProduct(Long productId) {
+    public List<RecipeDTO> getRecipesByProduct(Long productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
         return recipeRepository.findByProduct(product).stream()
@@ -32,7 +31,7 @@ public class RecipeService {
     }
 
     @Transactional
-    public RecipeDto createRecipe(RecipeDto dto) {
+    public RecipeDTO createRecipe(RecipeDTO dto) {
         Product product = productRepository.findById(dto.getProductId())
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
@@ -48,7 +47,7 @@ public class RecipeService {
     }
 
     @Transactional
-    public RecipeDto updateRecipe(Long id, RecipeDto dto) {
+    public RecipeDTO updateRecipe(Long id, RecipeDTO dto) {
         Recipe recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Recipe not found"));
 
@@ -77,7 +76,7 @@ public class RecipeService {
         });
     }
 
-    private void updateEntityFromDto(Recipe recipe, RecipeDto dto, Product product) {
+    private void updateEntityFromDto(Recipe recipe, RecipeDTO dto, Product product) {
         recipe.setName(dto.getName());
         recipe.setDescription(dto.getDescription());
         recipe.setTargetQuantity(dto.getTargetQuantity());
@@ -107,8 +106,8 @@ public class RecipeService {
         }
     }
 
-    private RecipeDto toDto(Recipe recipe) {
-        RecipeDto dto = new RecipeDto();
+    private RecipeDTO toDto(Recipe recipe) {
+        RecipeDTO dto = new RecipeDTO();
         dto.setId(recipe.getId());
         dto.setName(recipe.getName());
         dto.setDescription(recipe.getDescription());
