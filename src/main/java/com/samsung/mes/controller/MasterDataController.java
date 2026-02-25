@@ -1,11 +1,9 @@
 package com.samsung.mes.controller;
 
-import com.samsung.mes.entity.Company;
-import com.samsung.mes.entity.Product;
-import com.samsung.mes.entity.Project;
-import com.samsung.mes.repository.CompanyRepository;
-import com.samsung.mes.repository.ProductRepository;
-import com.samsung.mes.repository.ProjectRepository;
+import com.samsung.mes.dto.CompanyDTO;
+import com.samsung.mes.dto.ProductDTO;
+import com.samsung.mes.dto.ProjectDTO;
+import com.samsung.mes.service.MasterDataService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,25 +13,25 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*") // Allow frontend access
+@CrossOrigin(origins = "http://localhost:5173") // Allow frontend access
 public class MasterDataController {
 
-    private final CompanyRepository companyRepository;
-    private final ProjectRepository projectRepository;
-    private final ProductRepository productRepository;
+    // 해결 포인트 1: 3개의 Repository를 지우고 Service 하나만 의존성 주입을 받습니다.
+    private final MasterDataService masterDataService;
 
+    // 해결 포인트 2: 엔티티 대신 DTO를 반환하도록 Service의 메서드를 호출합니다.
     @GetMapping("/companies")
-    public ResponseEntity<List<Company>> getCompanies() {
-        return ResponseEntity.ok(companyRepository.findAll());
+    public ResponseEntity<List<CompanyDTO>> getCompanies() {
+        return ResponseEntity.ok(masterDataService.getAllCompanies());
     }
 
-    @GetMapping("/companies/{id}/projects")
-    public ResponseEntity<List<Project>> getProjectsByCompany(@PathVariable Long id) {
-        return ResponseEntity.ok(projectRepository.findByCompanyId(id));
+    @GetMapping("/companies/{companyId}/projects")
+    public ResponseEntity<List<ProjectDTO>> getProjects(@PathVariable("companyId") Long companyId) {
+        return ResponseEntity.ok(masterDataService.getProjectsByCompany(companyId));
     }
 
-    @GetMapping("/projects/{id}/products")
-    public ResponseEntity<List<Product>> getProductsByProject(@PathVariable Long id) {
-        return ResponseEntity.ok(productRepository.findByProjectId(id));
+    @GetMapping("/projects/{projectId}/products")
+    public ResponseEntity<List<ProductDTO>> getProducts(@PathVariable("projectId") Long projectId) {
+        return ResponseEntity.ok(masterDataService.getProductsByProject(projectId));
     }
 }
