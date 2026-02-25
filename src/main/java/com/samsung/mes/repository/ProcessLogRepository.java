@@ -10,10 +10,4 @@ import java.util.List;
 @Repository
 public interface ProcessLogRepository extends JpaRepository<ProcessLog, Long> {
 
-    List<ProcessLog> findTop30ByProcessIdOrderByTimeStampDesc(Long processId);
-
-    @Query(value =
-            "SELECT * FROM (SELECT * FROM process_log WHERE process_id = :processId ORDER BY timestamp DESC LIMIT 30) AS sub ORDER BY timestamp ASC"
-            , nativeQuery = true)
-    List<ProcessLog> findRecentLogs(@Param("processId") Long processId);
 }

@@ -1,5 +1,6 @@
 package com.samsung.mes.dto;
 
+import jakarta.persistence.Column;
 import lombok.Data;
 import java.util.List;
 

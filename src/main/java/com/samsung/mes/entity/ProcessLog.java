@@ -22,6 +22,11 @@ public class ProcessLog {
     @JsonIgnore // JSON 변환 시 process 정보는 제외 (순환 참조 방지)
     private Process process; // FK (어떤 공정의 데이터인지)
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "simulation_id")
+    @JsonIgnore // JSON 변환 시 process 정보는 제외 (순환 참조 방지)
+    private Simulation simulation;
+
     private float tempPh;
     private float phValue;
     private float doValue;
