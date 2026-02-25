@@ -21,28 +21,6 @@ public class SimulationService {
     private final SimulationLogRepository simulationLogRepository;
     private final SimulationRepository simulationRepository;
 
-    @PostConstruct
-    @Transactional
-    public void initSimulation() {
-        long count = simulationRepository.count();
-
-        if (count == 0) {
-            Simulation sim = new Simulation();
-            sim.setStatus("RUNNING");
-            sim.setProgressRate(0.0f);
-            sim.setTemp(0.0f);
-            sim.setPh(0.0f);
-            sim.setDoValue(0.0f);
-            sim.setTimeStamp(java.time.LocalDateTime.now());
-
-            simulationRepository.save(sim);
-
-            System.out.println("초기 시뮬레이션 1건 생성 완료");
-        } else {
-            System.out.println("이미 simulation 데이터 존재: " + count + "건");
-        }
-    }
-
     //데이터 시뮬레이터
     @Scheduled(fixedRate = 5 * 1000) //10초
     @Transactional

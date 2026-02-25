@@ -46,4 +46,8 @@ public class Recipe {
 
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Process> processes = new ArrayList<>();
+
+    //26.02.25 민영 추가
+    @OneToOne(mappedBy = "recipe", cascade = CascadeType.ALL)
+    private Simulation simulation;
 }

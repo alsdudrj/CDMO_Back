@@ -17,9 +17,14 @@ public class RecipeController {
 
     private final RecipeService recipeService;
 
+    //(25.02.26 민영 수정) productId가 있으면 단건조회, 없으면 전체 조회로 변경
     @GetMapping
-    public ResponseEntity<List<RecipeDTO>> getRecipesByProduct(@RequestParam Long productId) {
-        return ResponseEntity.ok(recipeService.getRecipesByProduct(productId));
+    public ResponseEntity<List<RecipeDTO>> getRecipesByProduct(@RequestParam(required = false) Long productId) {
+        if (productId != null) {
+            return ResponseEntity.ok(recipeService.getRecipesByProduct(productId));
+        } else{
+            return ResponseEntity.ok(recipeService.getAllRecipes());
+        }
     }
 
     @PostMapping
