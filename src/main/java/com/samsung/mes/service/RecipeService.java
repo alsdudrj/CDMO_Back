@@ -1,6 +1,6 @@
 package com.samsung.mes.service;
 
-import com.samsung.mes.dto.ProcessDto;
+import com.samsung.mes.dto.ProcessDTO;
 import com.samsung.mes.dto.RecipeDTO;
 import com.samsung.mes.entity.Process;
 import com.samsung.mes.entity.Product;
@@ -92,7 +92,7 @@ public class RecipeService {
         // but since Process is weak entity here, replacement is acceptable for this task.
         recipe.getProcesses().clear();
         if (dto.getProcesses() != null) {
-            for (ProcessDto pDto : dto.getProcesses()) {
+            for (ProcessDTO pDto : dto.getProcesses()) {
                 Process process = new Process();
                 process.setName(pDto.getName());
                 process.setStepOrder(pDto.getStepOrder());
@@ -120,9 +120,9 @@ public class RecipeService {
             dto.setProductId(recipe.getProduct().getId());
         }
 
-        List<ProcessDto> processDtos = recipe.getProcesses().stream()
+        List<ProcessDTO> processDTOS = recipe.getProcesses().stream()
                 .map(p -> {
-                    ProcessDto pDto = new ProcessDto();
+                    ProcessDTO pDto = new ProcessDTO();
                     pDto.setId(p.getId());
                     pDto.setName(p.getName());
                     pDto.setStepOrder(p.getStepOrder());
@@ -133,7 +133,7 @@ public class RecipeService {
                     return pDto;
                 })
                 .collect(Collectors.toList());
-        dto.setProcesses(processDtos);
+        dto.setProcesses(processDTOS);
 
         return dto;
     }

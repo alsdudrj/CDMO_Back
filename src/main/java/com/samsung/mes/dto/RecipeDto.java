@@ -14,5 +14,5 @@ public class RecipeDTO {
     private String status;
     private Boolean isActive;
     private Long productId;
-    private List<ProcessDto> processes;
+    private List<ProcessDTO> processes;
 }
