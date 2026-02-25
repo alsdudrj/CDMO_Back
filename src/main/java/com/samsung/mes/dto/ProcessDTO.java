@@ -3,7 +3,7 @@ package com.samsung.mes.dto;
 import lombok.Data;
 
 @Data
-public class ProcessDto {
+public class ProcessDTO {
     private Long id;
     private String name;
     private Integer stepOrder;
