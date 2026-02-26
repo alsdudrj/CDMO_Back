@@ -48,6 +48,6 @@ public class Recipe {
     private List<Process> processes = new ArrayList<>();
 
     //26.02.25 민영 추가
-    @OneToOne(mappedBy = "recipe", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     private Simulation simulation;
 }

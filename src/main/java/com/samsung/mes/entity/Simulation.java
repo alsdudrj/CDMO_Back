@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "simulations")
@@ -28,6 +29,9 @@ public class Simulation {
     @JoinColumn(name = "product_id")
     @JsonIgnore
     private Product product;
+
+    @OneToMany(mappedBy = "simulation", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SimulationLog> logs;
 
     private String name;
 

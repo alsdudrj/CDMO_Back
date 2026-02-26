@@ -54,6 +54,8 @@ public class RecipeService {
 
         Simulation sim = new Simulation();
         sim.setRecipe(savedRecipe);          // 레시피 연결
+        savedRecipe.setSimulation(sim);
+
         sim.setProduct(product);             // 상품 연결
         sim.setName(savedRecipe.getName() + " 시뮬레이션");
         sim.setStepOrder(1);                 // 처음 단계

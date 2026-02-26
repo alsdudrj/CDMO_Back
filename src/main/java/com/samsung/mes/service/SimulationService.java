@@ -47,6 +47,12 @@ public class SimulationService {
             simulation.setProgressRate(finalRate);
             simulation.setTimeStamp(java.time.LocalDateTime.now());
 
+            //진행률 100% 도달 시 상태 변경 및 웹소켓 전송
+            if (finalRate >= 100.0f) {
+                simulation.setStatus("FINISHED");
+                messagingTemplate.convertAndSend("/topic/status/" + simulation.getId(), "FINISHED");
+            }
+
             //로그 저장 (새로고침 시 데이터 유지용)
             SimulationLog log = new SimulationLog();
             log.setSimulation(simulation);
