@@ -7,11 +7,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.samsung.mes.dto.DeviationDTO;
 import com.samsung.mes.service.DeviationService;
-import org.springframework.web.bind.annotation.CrossOrigin;
+//import org.springframework.web.bind.annotation.CrossOrigin;
 
 @RestController
 @RequestMapping("/api/deviations")
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+//@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class DeviationController {
 
     private final DeviationService deviationService;
