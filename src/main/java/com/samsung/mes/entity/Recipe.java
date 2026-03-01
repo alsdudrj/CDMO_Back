@@ -1,6 +1,5 @@
 package com.samsung.mes.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -9,7 +8,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +16,7 @@ import java.util.List;
 @ToString
 @Getter
 @Setter
-public class Recipe {
+public class Recipe{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

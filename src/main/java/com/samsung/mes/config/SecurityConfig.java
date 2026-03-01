@@ -2,6 +2,8 @@ package com.samsung.mes.config;
 
 import java.util.List;
 
+import com.samsung.mes.security.JwtFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -10,13 +12,17 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration //스프링 설정 클래스 (빈 등록/보안 설정)
 @EnableWebSecurity //Spring Security기능을 활성화 보안설정 기준으로 사용하게 해줌
+@RequiredArgsConstructor
 public class SecurityConfig{ //보안설정을 쉽게 overrid(재정의)해서 쓰는 기본 틀
+
+	private final JwtFilter jwtFilter;
 	
 	@Bean //db에 비밀번호를 저장할 때 그대로 저장하면 보안 문제가 생겨서 인코딩 시켜서 저장
 	public PasswordEncoder passwordEncoder() {
@@ -53,12 +59,18 @@ public class SecurityConfig{ //보안설정을 쉽게 overrid(재정의)해서 �
 		.authorizeHttpRequests(auth -> auth
 				.requestMatchers(HttpMethod.POST, "/members/login").permitAll()		//로그인 안해도 통과 가능
 				.requestMatchers("/members/login", "/members/register","/members/logout").permitAll()
-				.requestMatchers("/api/**").permitAll()
+				.requestMatchers(HttpMethod.GET, "/api/**").permitAll() // 조회는 누구나
+				.requestMatchers(HttpMethod.POST, "/api/**").authenticated() // 생성/수정은 로그인 필수
+				.requestMatchers(HttpMethod.PUT, "/api/**").authenticated()
+				.requestMatchers(HttpMethod.DELETE, "/api/**").authenticated()
+				.requestMatchers("/api/audit-logs/**").authenticated()
 				.requestMatchers("/api/sales/orders/**").permitAll()
 				.requestMatchers("/", "/error", "/favicon.ico").permitAll()
                 .requestMatchers("/ws-cdms/**").permitAll()
 				.anyRequest().authenticated()//위에서 허용된 것을 제외하고는 모두 로그인(인증)된 사용자만 접근가능
-		);
+		)
+		.addFilterBefore(jwtFilter,
+				UsernamePasswordAuthenticationFilter.class);;
 		
 		return http.build(); //완성된 규칙을 최종적으로 서버에 전송하여 적용
 	}

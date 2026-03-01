@@ -1,11 +1,10 @@
 package com.samsung.mes.service;
 
+import com.samsung.mes.custom.Auditable;
 import com.samsung.mes.dto.ProcessDTO;
 import com.samsung.mes.dto.RecipeDTO;
+import com.samsung.mes.entity.*;
 import com.samsung.mes.entity.Process;
-import com.samsung.mes.entity.Product;
-import com.samsung.mes.entity.Recipe;
-import com.samsung.mes.entity.Simulation;
 import com.samsung.mes.repository.ProductRepository;
 import com.samsung.mes.repository.RecipeRepository;
 import com.samsung.mes.repository.SimulationRepository;
@@ -37,6 +36,7 @@ public class RecipeService {
     }
 
     @Transactional
+    @Auditable(action = AuditAction.CREATE, entity = "RECIPE")
     public RecipeDTO createRecipe(RecipeDTO dto) {
         Product product = productRepository.findById(dto.getProductId())
                 .orElseThrow(() -> new RuntimeException("Product not found"));
@@ -73,6 +73,7 @@ public class RecipeService {
     }
 
     @Transactional
+    @Auditable(action = AuditAction.UPDATE, entity = "RECIPE")
     public RecipeDTO updateRecipe(Long id, RecipeDTO dto) {
         Recipe recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Recipe not found"));
@@ -90,6 +91,7 @@ public class RecipeService {
     }
 
     @Transactional
+    @Auditable(action = AuditAction.DELETE, entity = "RECIPE")
     public void deleteRecipe(Long id) {
         recipeRepository.deleteById(id);
     }
@@ -182,4 +184,61 @@ public class RecipeService {
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
+
+
+    //(26.03.01 민영추가) AuditLog 커스텀 어노테이션에 필요한 메서드
+    //private entity convert(DTO) 메서드 추가
+    private Recipe convert(RecipeDTO dto) {
+
+        Recipe recipe = new Recipe();
+        recipe.setName(dto.getName());
+        recipe.setDescription(dto.getDescription());
+        recipe.setTargetQuantity(dto.getTargetQuantity());
+        recipe.setUnit(dto.getUnit());
+        recipe.setVersion(dto.getVersion());
+        recipe.setStatus(dto.getStatus());
+        recipe.setIsActive(dto.getIsActive());
+
+        return recipe;
+    }
+    //private void updateFields(Entity, DTO) 메서드 추가
+    private void updateFields(Recipe recipe, RecipeDTO dto) {
+
+        recipe.setName(dto.getName());
+        recipe.setDescription(dto.getDescription());
+        recipe.setTargetQuantity(dto.getTargetQuantity());
+        recipe.setUnit(dto.getUnit());
+        recipe.setVersion(dto.getVersion());
+        recipe.setStatus(dto.getStatus());
+        recipe.setIsActive(dto.getIsActive());
+    }
+
+    /*
+    Auditable 어노테이션 사용시
+    1. custom패키지에 AuditAspect.java에서 repository를 final로 불러오고
+
+    2. AuditAspect.java 중간에 AFTER 저장 구간에
+    if (auditable.action() == AuditAction.CREATE) { 이쪽에서
+    아래 if (result instanceof RecipeDTO dto) { 에
+    else if 로
+    else if (result instanceof DTO이름 dto) {
+                entityId = dto.getId();
+            }
+    를 추가해줍니다.
+
+    3. AuditAspect.java 아래 findEntityById메서드에
+    case "엔티티이름":
+        return 리포지토리.findById(id).orElse(null);
+    를 추가해 줍니다.
+
+    4. AuditAspect.java 아래 convertToAuditJson메서드에
+    case를 추가합니다. (너무 길어서 AuditAspect에 예시적어둠)
+
+    5. 그리고 추가할 Service에서 Proxy로 감쌀 메서드위에
+    @Auditable(action = AuditAction.사용될 방식(예: DELETE/UPDATE 등), entity = "auditlog에 저장할 Entity이름")
+    이런 식으로 선언해주면 됩니다.
+
+    헷갈리시면 Recipe에서 제가 deleteRecipe나 updateRecipe위에 선언해두신거 보시면 됩니다.
+    */
+    /*/////////////////////////////////////////////*/
 }
