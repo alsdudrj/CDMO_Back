@@ -2,14 +2,25 @@ package com.samsung.mes.service;
 
 import java.util.Random;
 import java.util.UUID;
+
+import com.samsung.mes.custom.Auditable;
+import com.samsung.mes.entity.AuditAction;
+import com.samsung.mes.entity.Deviation;
+import com.samsung.mes.repository.DeviationRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.samsung.mes.dto.DeviationDTO;
 
 @Service
+@RequiredArgsConstructor
 public class DeviationService {
+
+    //(26.03.02 민영추가)
+    private final DeviationRepository deviationRepository;
 
     private final Random random = new Random();
 
+    @Auditable(action = AuditAction.CREATE, entity = "DEVIATION")
     public DeviationDTO simulateDeviation() {
         String[] parameters = {"Temperature", "pH", "Dissolved Oxygen"};
         String parameter = parameters[random.nextInt(parameters.length)];
@@ -47,14 +58,23 @@ public class DeviationService {
         // Round recordedValue to 2 decimal places
         recordedValue = Math.round(recordedValue * 100.0) / 100.0;
 
+        //(26.03.02 민영추가) 일탈 데이터 id build를 위해 Entitiy생성
+        Deviation deviation = new Deviation();
+        deviation.setSeverity(severity);
+        deviation.setStatus("OPEN");
+        deviation.setIsClosed(false);
+
+        Deviation saved = deviationRepository.save(deviation);
+
         return DeviationDTO.builder()
+                .id(saved.getId())
                 .batchId(UUID.randomUUID().toString())
                 .parameter(parameter)
                 .recordedValue(recordedValue)
                 .limitValue(limitValue)
                 .severity(severity)
-                .status("OPEN")
-                .isClosed(false)
+                .status(saved.getStatus())
+                .isClosed(saved.getIsClosed())
                 .build();
     }
 

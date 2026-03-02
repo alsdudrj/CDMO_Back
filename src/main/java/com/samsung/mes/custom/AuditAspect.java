@@ -1,11 +1,10 @@
 package com.samsung.mes.custom;
 
+import com.samsung.mes.dto.DeviationDTO;
 import com.samsung.mes.dto.RecipeDTO;
-import com.samsung.mes.entity.AuditAction;
-import com.samsung.mes.entity.AuditLog;
-import com.samsung.mes.entity.Recipe;
-import com.samsung.mes.entity.SalesOrder;
+import com.samsung.mes.entity.*;
 import com.samsung.mes.repository.AuditLogRepository;
+import com.samsung.mes.repository.DeviationRepository;
 import com.samsung.mes.repository.RecipeRepository;
 import com.samsung.mes.repository.SalesOrderRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +34,7 @@ public class AuditAspect {
 
     //Repository
     private final RecipeRepository recipeRepository;
+    private final DeviationRepository deviationRepository;
 
 
     @Around("@annotation(auditable)")   //auditable붙은 모든 메서드에 대한 Proxy
@@ -81,6 +81,8 @@ public class AuditAspect {
             afterJson = convertToAuditJson(result, auditable.entity());
 
             if (result instanceof RecipeDTO dto) {
+                entityId = dto.getId();
+            }else if (result instanceof DeviationDTO dto) {
                 entityId = dto.getId();
             }
 
@@ -130,6 +132,9 @@ public class AuditAspect {
             case "RECIPE":
                 return recipeRepository.findById(id).orElse(null);
 
+            case "DEVIATION":
+                return deviationRepository.findById(id).orElse(null);
+
             /* 추가 예시
             case "엔티티이름":
                 return 리포지토리.findById(id).orElse(null);
@@ -155,6 +160,10 @@ public class AuditAspect {
                         Map<String, Object> map = new HashMap<>();
                         map.put("id", dto.getId());
                         map.put("name", dto.getName());
+                        map.put("description", dto.getDescription());
+                        map.put("targetQuantity", dto.getTargetQuantity());
+                        map.put("unit", dto.getUnit());
+                        map.put("version", dto.getVersion());
                         map.put("status", dto.getStatus());
                         //공정 리스트 추가
                         map.put("processes", dto.getProcesses());
@@ -166,6 +175,10 @@ public class AuditAspect {
                         Map<String, Object> map = new HashMap<>();
                         map.put("id", recipe.getId());
                         map.put("name", recipe.getName());
+                        map.put("description", recipe.getDescription());
+                        map.put("targetQuantity", recipe.getTargetQuantity());
+                        map.put("unit", recipe.getUnit());
+                        map.put("version", recipe.getVersion());
                         map.put("status", recipe.getStatus());
 
                         //Process를 Map List 형태로 저장
@@ -183,8 +196,41 @@ public class AuditAspect {
                         }
                         return objectMapper.writeValueAsString(map);
                     }
+                    return objectMapper.writeValueAsString(Map.of("id", getIdSafely(entity)));
+                }
 
-                    /* 추가 예시 (사용할 Entity랑 DTO 이름으로 변경 하고 포함 시킬 log 값을 put으로 넣음) sales_order를 예시로 넣음
+                case "DEVIATION" -> {
+                    if (entity instanceof DeviationDTO dto) {
+                        Map<String, Object> map = new HashMap<>();
+                        map.put("id", dto.getId());
+                        map.put("batchId", dto.getBatchId());
+                        map.put("parameter", dto.getParameter());
+                        map.put("recordedValue", dto.getRecordedValue());
+                        map.put("limitValue", dto.getLimitValue());
+                        map.put("severity", dto.getSeverity());
+                        map.put("status", dto.getStatus());
+                        map.put("isClosed", dto.getIsClosed());
+                        return objectMapper.writeValueAsString(map);
+                    }
+
+                    if (entity instanceof Deviation deviation) {
+                        Map<String, Object> map = new HashMap<>();
+                        map.put("id", deviation.getId());
+
+                        if (deviation.getBatch() != null) {
+                            map.put("batchId", deviation.getBatch().getId());
+                        }
+
+                        map.put("severity", deviation.getSeverity());
+                        map.put("status", deviation.getStatus());
+                        map.put("isClosed", deviation.getIsClosed());
+
+                        return objectMapper.writeValueAsString(map);
+                    }
+                    return objectMapper.writeValueAsString(Map.of("id", getIdSafely(entity)));
+                }
+
+                /* 추가 예시 (사용할 Entity랑 DTO 이름으로 변경 하고 포함 시킬 log 값을 put으로 넣음) sales_order를 예시로 넣음
                     case "SALES_ORDER" -> {
                         if (entity instanceof SalesOrderDTO dto) {
                             Map<String, Object> map = new HashMap<>();
@@ -202,11 +248,10 @@ public class AuditAspect {
                             map.put("status", order.getStatus());
                             return objectMapper.writeValueAsString(map);
                         }
+                        return objectMapper.writeValueAsString(Map.of("id", getIdSafely(entity)));
                     }
                     */
 
-                    return objectMapper.writeValueAsString(Map.of("id", getIdSafely(entity)));
-                }
                 default -> {
                     return objectMapper.writeValueAsString(Map.of("id", getIdSafely(entity)));
                 }

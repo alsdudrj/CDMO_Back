@@ -26,10 +26,10 @@ public class Deviation {
     @Column(nullable = false)
     @NotBlank
     @Pattern(regexp = "CRITICAL|MAJOR|MINOR")
-    private LocalDate severity;
+    private String severity;
 
     @Column(name = "is_closed", nullable = false)
-    private Boolean isClosed;
+    private Boolean isClosed = false;
 
     @Column(nullable = false)
     @NotBlank

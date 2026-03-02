@@ -17,4 +17,5 @@ public class DeviationDTO {
     private String severity;
     private String status;
     private Boolean isClosed;
+    private Long id;
 }
