@@ -60,6 +60,7 @@ public class SecurityConfig{ //보안설정을 쉽게 overrid(재정의)해서 �
 				.requestMatchers(HttpMethod.POST, "/members/login").permitAll()		//로그인 안해도 통과 가능
 				.requestMatchers("/members/login", "/members/register","/members/logout").permitAll()
 				.requestMatchers(HttpMethod.GET, "/api/**").permitAll() // 조회는 누구나
+                .requestMatchers("/api/signatures/**").permitAll()
 				.requestMatchers(HttpMethod.POST, "/api/**").authenticated() // 생성/수정은 로그인 필수
 				.requestMatchers(HttpMethod.PUT, "/api/**").authenticated()
 				.requestMatchers(HttpMethod.DELETE, "/api/**").authenticated()
