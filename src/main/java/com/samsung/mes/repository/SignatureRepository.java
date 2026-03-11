@@ -1,11 +1,8 @@
 package com.samsung.mes.repository;
 
-import com.samsung.mes.dto.SignatureRequest;
+import com.samsung.mes.entity.Signature;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
-
-public interface SignatureRepository extends JpaRepository<SignatureRequest, Long> {
-    // 관리자가 볼 대기열 (PENDING 상태인 것만 조회)
-    List<SignatureRequest> findByStatusOrderByCreatedAtDesc(String status);
+// 새로 생성: 실제 Signature 엔티티를 담당
+public interface SignatureRepository extends JpaRepository<Signature, Long> {
 }
