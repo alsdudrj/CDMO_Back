@@ -10,6 +10,9 @@ import com.samsung.mes.repository.DeviationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.samsung.mes.dto.DeviationDTO;
+import com.samsung.mes.dto.SignatureRequest;
+import org.springframework.transaction.annotation.Transactional;
+import com.samsung.mes.dto.DeviationApprovalDTO;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +20,26 @@ public class DeviationService {
 
     //(26.03.02 민영추가)
     private final DeviationRepository deviationRepository;
+    private final SignatureService signatureService; // 의존성 주입 추가
+
+    @Transactional
+    public void approveDeviationWithSignature(Long deviationId, DeviationApprovalDTO request) {
+        // 1. 일탈 정보 조회
+        Deviation deviation = deviationRepository.findById(deviationId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 일탈을 찾을 수 없습니다."));
+
+        // 2. 전자서명 검증 및 생성 (SignatureService 위임)
+        signatureService.createSignatureForDeviation(deviation, request);
+
+        // 3. 일탈 상태 업데이트
+        // 기존 엔티티의 상태 변경 규칙에 따라 'CLOSED' 상태로 업데이트합니다. [cite: 5, 6]
+        deviation.setStatus("CLOSED");
+        deviation.setIsClosed(true);
+
+        deviationRepository.save(deviation);
+    }
+
+
 
     private final Random random = new Random();
 
@@ -89,6 +112,8 @@ public class DeviationService {
                 return criticalBase + noise;
             default:
                 return minorBase;
+
+
         }
     }
 }

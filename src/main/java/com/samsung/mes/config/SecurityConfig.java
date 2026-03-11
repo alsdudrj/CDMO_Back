@@ -61,6 +61,7 @@ public class SecurityConfig{ //보안설정을 쉽게 overrid(재정의)해서 �
 				.requestMatchers("/members/login", "/members/register","/members/logout").permitAll()
 				.requestMatchers(HttpMethod.GET, "/api/**").permitAll() // 조회는 누구나
                 .requestMatchers("/api/signatures/**").permitAll()
+                .requestMatchers("/api/deviations/**").permitAll() // 지원: 일탈 - 토큰 검사 없이 통과
 				.requestMatchers(HttpMethod.POST, "/api/**").authenticated() // 생성/수정은 로그인 필수
 				.requestMatchers(HttpMethod.PUT, "/api/**").authenticated()
 				.requestMatchers(HttpMethod.DELETE, "/api/**").authenticated()
