@@ -1,12 +1,17 @@
 package com.samsung.mes.service;
 
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
 import com.samsung.mes.custom.Auditable;
 import com.samsung.mes.entity.AuditAction;
 import com.samsung.mes.entity.Deviation;
+import com.samsung.mes.entity.Recipe;
+import com.samsung.mes.entity.Process;
+
 import com.samsung.mes.repository.DeviationRepository;
+import com.samsung.mes.repository.RecipeRepository; // ✨ 추가
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.samsung.mes.dto.DeviationDTO;
@@ -18,9 +23,11 @@ import com.samsung.mes.dto.DeviationApprovalDTO;
 @RequiredArgsConstructor
 public class DeviationService {
 
-    //(26.03.02 민영추가)
     private final DeviationRepository deviationRepository;
     private final SignatureService signatureService; // 의존성 주입 추가
+    private final RecipeRepository recipeRepository; // ✨ 의존성 주입 추가
+
+    private final Random random = new Random();
 
     @Transactional
     public void approveDeviationWithSignature(Long deviationId, DeviationApprovalDTO request) {
@@ -32,58 +39,63 @@ public class DeviationService {
         signatureService.createSignatureForDeviation(deviation, request);
 
         // 3. 일탈 상태 업데이트
-        // 기존 엔티티의 상태 변경 규칙에 따라 'CLOSED' 상태로 업데이트합니다. [cite: 5, 6]
         deviation.setStatus("CLOSED");
         deviation.setIsClosed(true);
 
         deviationRepository.save(deviation);
     }
 
-
-
-    private final Random random = new Random();
-
     @Auditable(action = AuditAction.CREATE, entity = "DEVIATION")
     public DeviationDTO simulateDeviation() {
+
+        // ✨ 1. DB에서 활성화된(Active) 레시피를 가져옵니다.
+        List<Recipe> activeRecipes = recipeRepository.findByIsActiveTrue();
+        if (activeRecipes.isEmpty()) {
+            throw new IllegalStateException("활성화된 레시피가 없습니다.");
+        }
+        // 시뮬레이션을 위해 활성화된 레시피 중 하나를 랜덤으로 선택
+        Recipe recipe = activeRecipes.get(random.nextInt(activeRecipes.size()));
+
+        // ✨ 2. 해당 레시피의 첫 번째 Process(세부 공정) 파라미터 기준값을 가져옵니다.
+        if (recipe.getProcesses().isEmpty()) {
+            throw new IllegalStateException("해당 레시피에 공정(Process) 데이터가 없습니다.");
+        }
+        Process process = recipe.getProcesses().get(0);
+
         String[] parameters = {"Temperature", "pH", "Dissolved Oxygen"};
         String parameter = parameters[random.nextInt(parameters.length)];
 
-        // Determine severity based on weighted random
-        int rand = random.nextInt(100);
-        String severity;
-        if (rand < 75) {
-            severity = "MINOR";
-        } else if (rand < 95) { // 75 + 20
-            severity = "MAJOR";
-        } else { // Remaining 5
-            severity = "CRITICAL";
-        }
+        int rand = random.nextInt(100); // [cite: 391]
+        String severity = (rand < 75) ? "MINOR" : (rand < 95) ? "MAJOR" : "CRITICAL";
 
         double limitValue = 0.0;
         double recordedValue = 0.0;
 
-        // Define base values and deviation logic per parameter
+        // ✨ 3. 하드코딩 제거! Process 엔티티의 실제 설정값을 가져옵니다.
+        // (주의: Process 엔티티의 Getter 메서드 이름은 실제 구현에 맞게 수정해주세요)
         if ("Temperature".equals(parameter)) {
-            limitValue = 37.0; // Example limit for cell culture
-            // Deviation logic: higher severity means larger deviation
-            double deviation = getDeviationAmount(severity, 0.5, 2.0, 5.0);
-            recordedValue = limitValue + deviation * (random.nextBoolean() ? 1 : -1);
+            limitValue = process.getTemp();
+            double deviation = getDeviationAmount(severity, 0.5, 2.0, 5.0); // [cite: 397]
+            recordedValue = limitValue + deviation * (random.nextBoolean() ? 1 : -1); // [cite: 398]
         } else if ("pH".equals(parameter)) {
-            limitValue = 7.2;
-            double deviation = getDeviationAmount(severity, 0.1, 0.5, 1.0);
+            limitValue = process.getPh();
+            double deviation = getDeviationAmount(severity, 0.1, 0.5, 1.0); // [cite: 400]
             recordedValue = limitValue + deviation * (random.nextBoolean() ? 1 : -1);
         } else if ("Dissolved Oxygen".equals(parameter)) {
-            limitValue = 50.0; // % saturation
-            double deviation = getDeviationAmount(severity, 5.0, 15.0, 30.0);
-            recordedValue = limitValue + deviation * (random.nextBoolean() ? 1 : -1);
+            limitValue = process.getDoValue(); // DO 필드 Getter 매핑
+            double deviation = getDeviationAmount(severity, 5.0, 15.0, 30.0); // [cite: 402]
+            recordedValue = limitValue + deviation * (random.nextBoolean() ? 1 : -1); // [cite: 403]
         }
 
-        // Round recordedValue to 2 decimal places
-        recordedValue = Math.round(recordedValue * 100.0) / 100.0;
+        recordedValue = Math.round(recordedValue * 100.0) / 100.0; // [cite: 404]
 
-        //(26.03.02 민영추가) 일탈 데이터 id build를 위해 Entitiy생성
-        Deviation deviation = new Deviation();
-        deviation.setSeverity(severity);
+        // ✨ 4. 엔티티에 실제 레시피 정보와 수치를 꼼꼼히 저장합니다.
+        Deviation deviation = new Deviation(); // [cite: 405]
+        deviation.setRecipe(recipe);
+        deviation.setParameter(parameter);
+        deviation.setLimitValue(limitValue);
+        deviation.setRecordedValue(recordedValue);
+        deviation.setSeverity(severity); // [cite: 406]
         deviation.setStatus("OPEN");
         deviation.setIsClosed(false);
 
@@ -91,15 +103,17 @@ public class DeviationService {
 
         return DeviationDTO.builder()
                 .id(saved.getId())
+                // TODO: Batch 연동 시 실제 batchId로 교체 필요
                 .batchId(UUID.randomUUID().toString())
                 .parameter(parameter)
                 .recordedValue(recordedValue)
                 .limitValue(limitValue)
-                .severity(severity)
+                .severity(severity) // [cite: 407]
                 .status(saved.getStatus())
                 .isClosed(saved.getIsClosed())
-                .build();
+                .build(); // [cite: 408]
     }
+
 
     private double getDeviationAmount(String severity, double minorBase, double majorBase, double criticalBase) {
         double noise = random.nextDouble() * minorBase; // add some noise
