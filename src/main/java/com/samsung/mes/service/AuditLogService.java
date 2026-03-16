@@ -16,7 +16,6 @@ public class AuditLogService {
     private final AuditLogRepository auditLogRepository;
 
     public List<AuditLog> getAllLogs() {
-// 지원: 최신순(가장 최근에 생성된 로그가 먼저 나오도록)으로 조회하기 위해 ASC에서 DESC로 수정
         return auditLogRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
     }
 

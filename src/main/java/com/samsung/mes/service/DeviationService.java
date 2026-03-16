@@ -1,5 +1,7 @@
 package com.samsung.mes.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Random;
 import java.util.UUID;
 
@@ -7,7 +9,11 @@ import com.samsung.mes.custom.Auditable;
 import com.samsung.mes.entity.AuditAction;
 import com.samsung.mes.entity.Deviation;
 import com.samsung.mes.repository.DeviationRepository;
+import com.samsung.mes.spec.DeviationSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import com.samsung.mes.dto.DeviationDTO;
 import com.samsung.mes.dto.SignatureRequest;
@@ -83,9 +89,13 @@ public class DeviationService {
 
         //(26.03.02 민영추가) 일탈 데이터 id build를 위해 Entitiy생성
         Deviation deviation = new Deviation();
+        deviation.setParameter(parameter);
+        deviation.setRecordedValue(recordedValue);
+        deviation.setLimitValue(limitValue);
         deviation.setSeverity(severity);
         deviation.setStatus("OPEN");
         deviation.setIsClosed(false);
+        deviation.setCreatedAt(LocalDateTime.now());
 
         Deviation saved = deviationRepository.save(deviation);
 
@@ -115,5 +125,46 @@ public class DeviationService {
 
 
         }
+    }
+
+    //(26.03.16 민영추가) 검색기능 추가
+    @Transactional(readOnly = true)
+    public Page<DeviationDTO> searchDeviations(
+            String severity,
+            String status,
+            String keyword,
+            LocalDate startDate,
+            LocalDate endDate,
+            Pageable pageable
+    ){
+
+        LocalDateTime start = startDate != null ? startDate.atStartOfDay() : null;
+        LocalDateTime end = endDate != null ? endDate.atTime(23,59,59) : null;
+
+        Specification<Deviation> spec = Specification
+                .where(DeviationSpecification.severityEquals(severity))
+                .and(DeviationSpecification.statusEquals(status))
+                .and(DeviationSpecification.keywordLike(keyword))
+                .and(DeviationSpecification.createdAfter(start))
+                .and(DeviationSpecification.createdBefore(end));
+
+        Page<Deviation> deviations = deviationRepository.findAll(spec, pageable);
+
+        return deviations.map(this::convertToDTO);
+    }
+
+    private DeviationDTO convertToDTO(Deviation deviation){
+        return DeviationDTO.builder()
+                .id(deviation.getId())
+                .batchId(deviation.getBatch() != null ? deviation.getBatch().getBatchNo() : "N/A")
+                .parameter(deviation.getParameter())
+                .recordedValue(deviation.getRecordedValue())
+                .limitValue(deviation.getLimitValue())
+                .severity(deviation.getSeverity())
+                .status(deviation.getStatus())
+                .isClosed(deviation.getIsClosed())
+                .createdAt(deviation.getCreatedAt())
+                .build();
+
     }
 }
