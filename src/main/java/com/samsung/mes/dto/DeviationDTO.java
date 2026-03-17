@@ -5,11 +5,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class DeviationDTO {
+    private Long id;
     private String batchId;
     private String parameter;
     private Double recordedValue;
@@ -17,5 +20,5 @@ public class DeviationDTO {
     private String severity;
     private String status;
     private Boolean isClosed;
-    private Long id;
+    private LocalDateTime createdAt;
 }

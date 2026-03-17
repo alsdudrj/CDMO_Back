@@ -8,11 +8,15 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @ToString
 @Getter
 @Setter
+@Table(name = "deviation", indexes = {
+        @Index(name = "idx_deviation_status_severity", columnList = "status, severity")
+})
 public class Deviation {
 
     @Id
@@ -41,11 +45,19 @@ public class Deviation {
     @Pattern(regexp = "CRITICAL|MAJOR|MINOR")
     private String severity;
 
-    @Column(name = "is_closed", nullable = false)
-    private Boolean isClosed = false;
-
     @Column(nullable = false)
     @NotBlank
     @Pattern(regexp = "OPEN|INVESTIGATING|CLOSED")
     private String status;
+
+    @Column(name = "is_closed", nullable = false)
+    private Boolean isClosed = false;
+
+    @Column(nullable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+    }
 }
