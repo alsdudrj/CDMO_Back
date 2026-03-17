@@ -27,6 +27,19 @@ public class Deviation {
     @JoinColumn(name = "batch_id")
     private Batch batch;
 
+    // ✨ 추가 1: 어떤 레시피(또는 프로세스)에서 발생한 일탈인지 추적
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "recipe_id")
+    private Recipe recipe;
+
+    // ✨ 추가 2: 추후 Audit을 위해 DTO에 있던 데이터를 DB로 끌어내림
+    @Column(nullable = false)
+    private String parameter;      // 예: "Temperature", "pH", "Dissolved Oxygen"
+    @Column(nullable = false)
+    private Double limitValue;     // 레시피(Process)에 설정된 기준값
+    @Column(nullable = false)
+    private Double recordedValue;  // 실제 측정된 일탈 수치
+
     @Column(nullable = false)
     private String parameter;
 

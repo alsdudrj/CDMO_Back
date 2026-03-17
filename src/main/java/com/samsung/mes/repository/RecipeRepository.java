@@ -11,5 +11,6 @@ import java.util.Optional;
 @Repository
 public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     List<Recipe> findByProduct(Product product);
+    List<Recipe> findByIsActiveTrue();
     Optional<Recipe> findByProductAndIsActiveTrue(Product product);
 }
