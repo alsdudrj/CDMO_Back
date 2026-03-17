@@ -41,15 +41,6 @@ public class Deviation {
     private Double recordedValue;  // 실제 측정된 일탈 수치
 
     @Column(nullable = false)
-    private String parameter;
-
-    @Column(nullable = false)
-    private Double recordedValue;
-
-    @Column(nullable = false)
-    private Double limitValue;
-
-    @Column(nullable = false)
     @NotBlank
     @Pattern(regexp = "CRITICAL|MAJOR|MINOR")
     private String severity;

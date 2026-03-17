@@ -2,7 +2,11 @@ package com.samsung.mes.service;
 
 import com.samsung.mes.entity.AuditLog;
 import com.samsung.mes.repository.AuditLogRepository;
+import com.samsung.mes.spec.AuditLogSpec;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,9 +19,9 @@ import java.util.List;
 public class AuditLogService {
     private final AuditLogRepository auditLogRepository;
 
-    public List<AuditLog> getAllLogs() {
-        return auditLogRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
-    }
+//    public List<AuditLog> getAllLogs() {
+//        return auditLogRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+//    }
 
     @Transactional
     public void logAction(String username, String action, String entityName, Long entityId) {
@@ -32,5 +36,27 @@ public class AuditLogService {
                 .build();
 
         auditLogRepository.save(auditLog);
+    }
+
+    //검색추가
+    public Page<AuditLog> searchLogs(
+            String keyword,
+            String action,
+            LocalDateTime startDate,
+            LocalDateTime endDate,
+            int page,
+            int size
+    ) {
+
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(Sort.Direction.DESC, "createdAt")
+        );
+
+        return auditLogRepository.findAll(
+                AuditLogSpec.search(keyword, action, startDate, endDate),
+                pageable
+        );
     }
 }
